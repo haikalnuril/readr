@@ -1,0 +1,89 @@
+{
+  "app": "FileReader App",
+  "last_updated": "2026-06-20",
+  "conventions": {
+    "id_prefix": {
+      "F": "feature",
+      "R": "refactor",
+      "C": "change / perubahan",
+      "B": "bugfix"
+    },
+    "type_values": ["feature", "refactor", "change", "fix"],
+    "status_values": ["todo", "in-progress", "done"],
+    "intake_rule": "Setiap permintaan baru dicatat sebagai entry di sini DULU (status in-progress) sebelum kode ditulis. Lihat AGENTS.md bagian Intake."
+  },
+  "features": [
+    {
+      "id": "F01",
+      "name": "Upload file (.md, .txt, .pdf)",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "User bisa upload file, konten tampil di reader. Test: parse masing-masing format, konten terbaca dengan benar.",
+      "notes": "FileUploader + lib/parsers (md/txt/pdf). PDF di-parse client-side via pdfjs-dist."
+    },
+    {
+      "id": "F02",
+      "name": "Dark mode / custom theme toggle",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "User bisa switch light/dark/sepia/midnight. Preferensi tersimpan (next-themes). Test: tema valid & default tersedia.",
+      "notes": "ThemeProvider (next-themes) + ThemePills + CSS variables di globals.css."
+    },
+    {
+      "id": "F03",
+      "name": "Histori file (localStorage)",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "File yang pernah dibuka muncul di list histori, persist setelah refresh. Test: add/get/remove/dedupe entry.",
+      "notes": "lib/storage.ts (adapter localStorage) + HistoryList + HistoryDrawer. Ada preferensi Save history."
+    },
+    {
+      "id": "F04",
+      "name": "Font size adjuster",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "Slider font size 12-24px, tersimpan di localStorage. Test: clamp & persist nilai.",
+      "notes": "Slider di halaman Settings + helper di storage.ts."
+    },
+    {
+      "id": "F05",
+      "name": "Sync histori lintas device (Supabase)",
+      "type": "feature",
+      "status": "todo",
+      "definition_of_done": "User bisa login, histori sinkron antar device. Test: login di 2 browser, histori sama.",
+      "notes": "Belum dikerjakan. Butuh proyek Supabase + env var (lihat .env.example). Storage adapter sudah disiapkan agar mudah ditambah backend. Toggle 'Sync across devices' di Settings sengaja disabled sampai ini selesai."
+    },
+    {
+      "id": "C01",
+      "name": "Redesign UI sesuai mockup + History jadi sidebar geser di top bar",
+      "type": "change",
+      "status": "done",
+      "definition_of_done": "Tampilan sesuai mockup (kartu upload, Recent files, halaman Settings). Bottom navbar dihapus; History pindah ke top bar dan terbuka sebagai sidebar geser dari kanan. Verifikasi: test+lint+typecheck+build lulus.",
+      "notes": "TopBar + HistoryDrawer + ThemePills + Toggle + FileTypeIcon + icons + lib/format. storage.ts dapat Save-history + session cache. Hapus ThemeSelector & FontSizeAdjuster."
+    },
+    {
+      "id": "C02",
+      "name": "Auto-hide top bar saat baca (gaya manga/webtoon reader)",
+      "type": "change",
+      "status": "done",
+      "definition_of_done": "Di halaman reader: top bar otomatis sembunyi saat scroll ke bawah dan muncul saat scroll ke atas; tap/klik area baca men-toggle bar (immersive reading). Tetap muncul saat dekat puncak halaman. Klik link/tombol tidak ikut men-toggle. Verifikasi: test+lint+typecheck+build lulus.",
+      "notes": "TopBar dapat prop autoHide; logika scroll + tap-to-toggle. Diaktifkan di /reader/[id]."
+    },
+    {
+      "id": "C03",
+      "name": "Ganti ikon Settings (gear sebelumnya tidak lengkap/rusak)",
+      "type": "change",
+      "status": "done",
+      "definition_of_done": "Ikon Settings di top bar memakai path gear yang lengkap & rapi. Verifikasi: build lulus, ikon render utuh.",
+      "notes": "Perbaiki SettingsIcon di components/icons.tsx."
+    },
+    {
+      "id": "F06",
+      "name": "Resume posisi baca + tombol 'Top' & 'Last read'",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "Posisi baca per file tersimpan (localStorage) dan otomatis dipulihkan saat file dibuka lagi (termasuk setelah keluar-masuk app). Ada tombol melayang di reader: 'Top' (ke atas) dan 'Last read' (ke posisi baca terakhir). Test: getReadPosition/setReadPosition (clamp, persist, default) + bersih saat entri/histori dihapus.",
+      "notes": "storage.ts: getReadPosition/setReadPosition + cleanup. Komponen ReaderControls (FAB) dengan logika scroll fraction. Resume bekerja saat Save history ON (id file stabil)."
+    }
+  ]
+}

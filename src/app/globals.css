@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens (consumed by tailwind.config.ts as rgb(var(--x))) ───────── */
+
+:root,
+[data-theme="light"] {
+  --bg: 255 255 255;
+  --surface: 248 250 252;
+  --fg: 17 24 39;
+  --muted: 100 116 139;
+  --accent: 37 99 235;
+  --border: 226 232 240;
+}
+
+[data-theme="dark"] {
+  --bg: 17 24 39;
+  --surface: 31 41 55;
+  --fg: 243 244 246;
+  --muted: 148 163 184;
+  --accent: 96 165 250;
+  --border: 55 65 81;
+}
+
+[data-theme="sepia"] {
+  --bg: 244 236 216;
+  --surface: 250 244 228;
+  --fg: 67 52 38;
+  --muted: 124 106 84;
+  --accent: 180 83 9;
+  --border: 224 209 180;
+}
+
+[data-theme="midnight"] {
+  --bg: 10 14 26;
+  --surface: 18 24 42;
+  --fg: 219 226 240;
+  --muted: 120 134 168;
+  --accent: 129 140 248;
+  --border: 36 44 70;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+/* ── Markdown rendering (no typography plugin, kept minimal & theme-aware) ── */
+
+.markdown-body {
+  line-height: 1.7;
+  color: rgb(var(--fg));
+}
+.markdown-body > * + * {
+  margin-top: 0.85em;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.4em;
+}
+.markdown-body h1 {
+  font-size: 1.8em;
+}
+.markdown-body h2 {
+  font-size: 1.45em;
+}
+.markdown-body h3 {
+  font-size: 1.2em;
+}
+.markdown-body a {
+  color: rgb(var(--accent));
+  text-decoration: underline;
+}
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.5em;
+}
+.markdown-body ul {
+  list-style: disc;
+}
+.markdown-body ol {
+  list-style: decimal;
+}
+.markdown-body blockquote {
+  border-left: 3px solid rgb(var(--accent));
+  padding-left: 1em;
+  color: rgb(var(--muted));
+}
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background-color: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
+  border-radius: 0.3em;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+.markdown-body pre {
+  background-color: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
+  border-radius: 0.5em;
+  padding: 1em;
+  overflow-x: auto;
+}
+.markdown-body pre code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid rgb(var(--border));
+  padding: 0.4em 0.6em;
+  text-align: left;
+}
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+}
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid rgb(var(--border));
+}
