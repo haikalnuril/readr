@@ -38,8 +38,8 @@ export function TopBar({ title, backHref = "/" }: Props) {
             </h1>
           </>
         ) : (
-          <Link href="/" className="flex-1 text-xl font-bold text-fg">
-            FileReader
+          <Link href="/" className="flex-1 text-xl font-bold lowercase tracking-tight text-fg">
+            readr
           </Link>
         )}
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== FileReader App — Init ==="
+echo "=== readr — Init ==="
 
 # 1. Install dependencies
 echo "→ Installing dependencies..."

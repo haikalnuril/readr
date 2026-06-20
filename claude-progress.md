@@ -4,6 +4,30 @@ Catatan tiap sesi agent. **Sesi terbaru di paling atas.**
 
 ---
 
+### Sesi 2026-06-20 (g) — C04: rename app jadi 'readr'
+
+**Fitur dikerjakan:** C04 (change) — intake → rename → verifikasi → `done`.
+
+**Yang dilakukan:**
+- Nama app diganti **FileReader → readr** di: logo top bar (lowercase), metadata
+  `title`, `package.json`/`package-lock.json` (`name`), `feature_list.json`
+  (`app`), `AGENTS.md`, `README.md`, `init.sh`, `.env.example`, komentar
+  `storage.ts`.
+- **Tidak disentuh:** Web API `FileReader` di `parsers/index.ts` dan komponen
+  `FileReaderView` (nama teknis, bukan branding).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (21)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS (script jalan sebagai `readr@0.1.0`)
+
+**Status akhir:** selesai. C04 `done`.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
 ### Sesi 2026-06-20 (f) — B02: fix bookmark ketimpa + sembunyikan Top di puncak
 
 **Fitur dikerjakan:** B02 (fix) — intake → fix → verifikasi → `done`.

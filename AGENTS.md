@@ -1,4 +1,4 @@
-# FileReader App — Agent Operating Manual
+# readr — Agent Operating Manual
 
 > Baca file ini **pertama kali** setiap sesi dimulai.
 

@@ -1,7 +1,7 @@
 import type { HistoryEntry } from "./types";
 
 /**
- * Storage adapter for the FileReader app.
+ * Storage adapter for the readr app.
  *
  * Two layers, both swappable for a remote backend later (F05) without touching UI:
  *  - localStorage `filereader:history` → the persisted, user-visible recent list.

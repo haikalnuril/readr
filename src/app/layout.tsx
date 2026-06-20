@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "FileReader App",
+  title: "readr",
   description: "Baca file .md, .txt, dan .pdf dengan dark mode & histori.",
 };
 
