@@ -4,6 +4,69 @@ Catatan tiap sesi agent. **Sesi terbaru di paling atas.**
 
 ---
 
+### Sesi 2026-06-20 (f) — B02: fix bookmark ketimpa + sembunyikan Top di puncak
+
+**Fitur dikerjakan:** B02 (fix) — intake → fix → verifikasi → `done`.
+
+**Akar masalah:**
+- Guard "jangan simpan saat scroll programatik" pakai ambang jarak `< 4px`,
+  jadi rilis **4px sebelum** sampai puncak. Ekor animasi smooth-scroll (4px→0)
+  lalu **menyimpan posisi 0**, menimpa posisi baca asli. Akibatnya saat sudah di
+  puncak, "Last read" menunjuk ke 0 → klik tidak berfungsi.
+
+**Yang dilakukan:**
+- Guard diganti ke **deteksi scroll-idle**: `programmaticRef` aktif selama
+  animasi penuh, baru lepas ~160ms setelah scroll berhenti (`scheduleRelease`).
+  Aman untuk halaman panjang & untuk kasus tanpa pergerakan. Posisi tersimpan
+  tak pernah ketimpa oleh ekor animasi.
+- Tambah state `atTop` (scrollY < 8) → tombol **Top disembunyikan saat di puncak**.
+  Bookmark tetap tampil mengikuti visibilitas chrome.
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (21)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B02 `done`.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
+### Sesi 2026-06-20 (e) — B01: tombol FAB ikut visibilitas top bar
+
+**Fitur dikerjakan:** B01 (fix) — dicatat dulu di `feature_list.json`, fix, verifikasi, `done`.
+
+**Bug yang diperbaiki:**
+- Tombol "Last read" hilang saat di puncak & tombol "Top" muncul berdasarkan
+  posisi scroll. User mau keduanya muncul/hilang **bersama top bar** (toggle saat
+  tap, muncul saat scroll ke atas).
+
+**Yang dilakukan:**
+- `ChromeContext` baru jadi satu sumber kebenaran visibilitas chrome (scroll
+  hide/show + tap toggle). `TopBar` & `ReaderControls` sama-sama baca `visible`
+  dari sini — jadi sinkron. Logika scroll/tap dipindah dari TopBar ke provider.
+- `TopBar` tidak lagi punya prop `autoHide`; reader dibungkus `<ChromeProvider>`.
+  Halaman lain (home/settings) tanpa provider → bar selalu tampil (default).
+- `HistoryDrawer` dapat `data-chrome-ignore` supaya klik backdrop/panel drawer
+  tidak ikut men-toggle chrome.
+- `ReaderControls`: visibilitas dari context (bukan ambang scroll). Guard simpan
+  posisi diganti ke **target-distance** (bukan timeout) → scroll otomatis (restore/
+  Top/Last read) tidak menimpa posisi baca tersimpan, walau halaman panjang.
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (21)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B01 `done`.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
 ### Sesi 2026-06-20 (d) — C03 ikon Settings + F06 resume baca
 
 **Fitur dikerjakan:** C03 (change) & F06 (feature) — dicatat dulu di

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { HistoryEntry } from "@/lib/types";
 import { addToHistory, getFontSize, getHistoryEntry } from "@/lib/storage";
+import { ChromeProvider } from "@/components/ChromeContext";
 import { FileReaderView } from "@/components/FileReaderView";
 import { ReaderControls } from "@/components/ReaderControls";
 import { TopBar } from "@/components/TopBar";
@@ -43,10 +44,11 @@ export default function ReaderPage() {
   }, [id]);
 
   return (
-    <div className="min-h-dvh">
-      <TopBar title={state.status === "ready" ? state.entry.name : "Reader"} autoHide />
+    <ChromeProvider>
+      <div className="min-h-dvh">
+        <TopBar title={state.status === "ready" ? state.entry.name : "Reader"} />
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-6">
+        <main className="mx-auto w-full max-w-3xl px-4 py-6">
         {state.status === "loading" && <p className="text-muted">Loading…</p>}
 
         {state.status === "notfound" && (
@@ -71,7 +73,8 @@ export default function ReaderPage() {
             <ReaderControls entryId={state.entry.id} />
           </>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+    </ChromeProvider>
   );
 }

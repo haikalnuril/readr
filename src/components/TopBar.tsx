@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { useChrome } from "./ChromeContext";
 import { HistoryDrawer } from "./HistoryDrawer";
 import { ArrowLeftIcon, ClockIcon, SettingsIcon } from "./icons";
 
@@ -9,53 +10,18 @@ interface Props {
   /** When set, shows a back button + this title instead of the app logo. */
   title?: string;
   backHref?: string;
-  /**
-   * Manga/webtoon-style chrome: hide the bar while scrolling down, reveal it on
-   * scroll up, and toggle it by tapping the page. Used on the reader.
-   */
-  autoHide?: boolean;
 }
 
-// Don't treat taps on interactive UI as a "toggle the chrome" gesture.
-const INTERACTIVE = "a, button, input, select, textarea, label, [role=dialog], header";
-
-export function TopBar({ title, backHref = "/", autoHide = false }: Props) {
+export function TopBar({ title, backHref = "/" }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
-
-  // Hide on scroll-down, show on scroll-up, always show near the top.
-  useEffect(() => {
-    if (!autoHide) return;
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y < 64) setHidden(false);
-      else if (y > lastY + 6) setHidden(true);
-      else if (y < lastY - 6) setHidden(false);
-      lastY = y;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [autoHide]);
-
-  // Tap the reading area to toggle the chrome (ignore taps on controls/links).
-  useEffect(() => {
-    if (!autoHide) return;
-    const onClick = (e: MouseEvent) => {
-      if (drawerOpen) return;
-      const el = e.target as HTMLElement | null;
-      if (el?.closest(INTERACTIVE)) return;
-      setHidden((h) => !h);
-    };
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, [autoHide, drawerOpen]);
+  // visible is always true unless rendered inside a <ChromeProvider> (the reader).
+  const { visible } = useChrome();
 
   return (
     <>
       <header
         className={`sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-bg/90 px-4 py-3 backdrop-blur transition-transform duration-300 will-change-transform ${
-          hidden ? "-translate-y-full" : "translate-y-0"
+          visible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         {title ? (

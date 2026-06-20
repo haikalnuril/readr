@@ -44,6 +44,7 @@ export function HistoryDrawer({ open, onClose }: Props) {
 
   return (
     <div
+      data-chrome-ignore
       className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`}
       aria-hidden={!open}
     >

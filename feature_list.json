@@ -84,6 +84,22 @@
       "status": "done",
       "definition_of_done": "Posisi baca per file tersimpan (localStorage) dan otomatis dipulihkan saat file dibuka lagi (termasuk setelah keluar-masuk app). Ada tombol melayang di reader: 'Top' (ke atas) dan 'Last read' (ke posisi baca terakhir). Test: getReadPosition/setReadPosition (clamp, persist, default) + bersih saat entri/histori dihapus.",
       "notes": "storage.ts: getReadPosition/setReadPosition + cleanup. Komponen ReaderControls (FAB) dengan logika scroll fraction. Resume bekerja saat Save history ON (id file stabil)."
+    },
+    {
+      "id": "B01",
+      "name": "Tombol Top & Last read ikut visibilitas top bar (bukan posisi scroll)",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "Tombol Top & Last read muncul/hilang BERSAMA top bar (toggle saat tap halaman, muncul saat scroll ke atas, hilang saat scroll ke bawah) — bukan berdasarkan ambang posisi scroll. Bug 'Last read hilang saat di atas' hilang. Posisi baca tersimpan tidak ketimpa saat scroll otomatis (Top/Last read/restore).",
+      "notes": "Lifting visibilitas chrome ke ChromeContext (dipakai TopBar + ReaderControls). Guard simpan posisi pakai target-distance, bukan timeout rapuh."
+    },
+    {
+      "id": "B02",
+      "name": "Bookmark ketimpa saat scroll ke atas + sembunyikan tombol Top saat di puncak",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "(1) Tombol Last read tetap balik ke posisi baca sebelum klik Top, walaupun sudah sampai puncak (posisi tersimpan tidak ketimpa nol oleh ekor animasi). (2) Tombol Top hilang saat halaman sudah di puncak. Verifikasi: test+lint+typecheck+build lulus.",
+      "notes": "Ganti guard target-distance (rilis 4px lebih awal) → deteksi 'scroll idle': guard aktif selama animasi penuh, baru lepas ~160ms setelah scroll berhenti. Tambah state atTop untuk sembunyikan tombol Top."
     }
   ]
 }
