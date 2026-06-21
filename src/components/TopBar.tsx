@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useChrome } from "./ChromeContext";
 import { HistoryDrawer } from "./HistoryDrawer";
@@ -10,9 +10,11 @@ interface Props {
   /** When set, shows a back button + this title instead of the app logo. */
   title?: string;
   backHref?: string;
+  /** Optional extra buttons rendered before History (e.g. the reader search). */
+  actions?: ReactNode;
 }
 
-export function TopBar({ title, backHref = "/" }: Props) {
+export function TopBar({ title, backHref = "/", actions }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   // visible is always true unless rendered inside a <ChromeProvider> (the reader).
   const { visible } = useChrome();
@@ -42,6 +44,8 @@ export function TopBar({ title, backHref = "/" }: Props) {
             readr
           </Link>
         )}
+
+        {actions}
 
         <button
           type="button"

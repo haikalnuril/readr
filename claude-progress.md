@@ -4,6 +4,39 @@ Catatan tiap sesi agent. **Sesi terbaru di paling atas.**
 
 ---
 
+### Sesi 2026-06-21 — F07: cari teks di dokumen + next/prev
+
+**Fitur dikerjakan:** F07 (feature). Juga: entry C04 (rename 'readr') yang sempat
+hilang dari feature_list.json di-restore sebagai `done`.
+
+**Yang dilakukan:**
+- `ReaderSearch` — search bar di reader (fixed top): input, hitungan `n/total`,
+  tombol naik/turun, tombol tutup. Enter = next, Shift+Enter = prev, Esc = tutup.
+- Highlight pakai **CSS Custom Highlight API** (`CSS.highlights` + `Highlight`),
+  jadi **tidak mengubah DOM** hasil render markdown. Style `::highlight(...)` di
+  `globals.css` (semua hasil kuning, hasil aktif oranye). Hasil aktif di-scroll
+  ke tengah layar.
+- `findRanges` jalan via `TreeWalker` di `contentRef` (membungkus FileReaderView).
+- `TopBar` dapat slot `actions`; reader mengisi tombol Search (toggle).
+- Guard `supportsHighlight()` → no-op kalau browser tak dukung (navigasi tetap).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (21)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS (tipe Highlight API ada di TS 5.8)
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. F07 `done`.
+
+**Catatan:**
+- Pencarian per text-node (kata yang terpotong antar elemen tidak terhitung) —
+  cukup untuk kebutuhan baca biasa.
+- Tugas Vercel MCP ditunda atas permintaan user.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
 ### Sesi 2026-06-20 (g) — C04: rename app jadi 'readr'
 
 **Fitur dikerjakan:** C04 (change) — intake → rename → verifikasi → `done`.

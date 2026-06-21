@@ -100,6 +100,22 @@
       "status": "done",
       "definition_of_done": "(1) Tombol Last read tetap balik ke posisi baca sebelum klik Top, walaupun sudah sampai puncak (posisi tersimpan tidak ketimpa nol oleh ekor animasi). (2) Tombol Top hilang saat halaman sudah di puncak. Verifikasi: test+lint+typecheck+build lulus.",
       "notes": "Ganti guard target-distance (rilis 4px lebih awal) → deteksi 'scroll idle': guard aktif selama animasi penuh, baru lepas ~160ms setelah scroll berhenti. Tambah state atTop untuk sembunyikan tombol Top."
+    },
+    {
+      "id": "C04",
+      "name": "Rename aplikasi jadi 'readr'",
+      "type": "change",
+      "status": "done",
+      "definition_of_done": "Nama app jadi 'readr' di UI (logo top bar, metadata title) + harness/docs/config. Tidak menyentuh Web API FileReader maupun komponen FileReaderView.",
+      "notes": "Folder repo memang sudah 'readr'."
+    },
+    {
+      "id": "F07",
+      "name": "Cari teks di dokumen + tombol next/prev antar hasil",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "Di reader ada search bar: ketik kata → semua kemunculan ditandai, ada hitungan (mis. 3/12), dan tombol naik/turun untuk lompat antar hasil (scroll + sorot hasil aktif). Enter = next, Shift+Enter = prev, Esc = tutup. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "Pakai CSS Custom Highlight API (tidak mengubah DOM markdown). Komponen ReaderSearch + tombol search di TopBar (slot actions). Helper findRanges via TreeWalker."
     }
   ]
 }

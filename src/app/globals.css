@@ -46,6 +46,16 @@ body {
   color: rgb(var(--fg));
 }
 
+/* ── In-document search highlights (F07, CSS Custom Highlight API) ─────────── */
+
+::highlight(readr-search) {
+  background-color: rgba(250, 204, 21, 0.35);
+}
+::highlight(readr-search-current) {
+  background-color: #f59e0b;
+  color: #1a1a1a;
+}
+
 /* ── Markdown rendering (no typography plugin, kept minimal & theme-aware) ── */
 
 .markdown-body {
