@@ -25,6 +25,9 @@ export function ReaderControls({ entryId }: { entryId: string }) {
   const savedRef = useRef(0);
   const programmaticRef = useRef(false);
   const releaseTimer = useRef<number | null>(null);
+  // Whether the user has scrolled since opening — used so a late restore retry
+  // doesn't yank them away after they've started reading.
+  const userMovedRef = useRef(false);
   const [atTop, setAtTop] = useState(true);
 
   // Release the programmatic guard ~160ms after scrolling settles (works
@@ -36,19 +39,30 @@ export function ReaderControls({ entryId }: { entryId: string }) {
     }, 160);
   }
 
-  // Restore last-read position on open.
+  // Restore last-read position on open. Threshold is in PIXELS (not a fraction)
+  // so it still resumes early positions in very long documents, and it re-applies
+  // once after layout settles unless the user has already started scrolling.
   useEffect(() => {
     const saved = getReadPosition(entryId);
     savedRef.current = saved;
-    if (saved <= 0.01) return;
-    programmaticRef.current = true;
-    scheduleRelease();
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: saved * scrollMax(), behavior: "auto" });
-        scheduleRelease();
-      }),
-    );
+    userMovedRef.current = false;
+    if (saved <= 0) return;
+
+    const restore = () => {
+      const target = saved * scrollMax();
+      if (target < 24) return; // essentially the top
+      programmaticRef.current = true;
+      scheduleRelease();
+      window.scrollTo({ top: target, behavior: "auto" });
+      scheduleRelease();
+    };
+
+    requestAnimationFrame(() => requestAnimationFrame(restore));
+    const retry = window.setTimeout(() => {
+      if (userMovedRef.current) return;
+      if (Math.abs(window.scrollY - saved * scrollMax()) > 8) restore();
+    }, 300);
+    return () => window.clearTimeout(retry);
   }, [entryId]);
 
   // Track scroll: update button state always; persist only genuine user scrolls.
@@ -63,6 +77,7 @@ export function ReaderControls({ entryId }: { entryId: string }) {
           scheduleRelease();
           return;
         }
+        userMovedRef.current = true;
         const max = scrollMax();
         const frac = max > 0 ? y / max : 0;
         savedRef.current = frac;

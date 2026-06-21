@@ -150,6 +150,14 @@
       "notes": "pdf.ts: simpan x kiri tiap baris, bodyLeft = min(x), paragraf baru jika (x - bodyLeft) > ~0.5em ATAU gap besar."
     },
     {
+      "id": "B07",
+      "name": "Resume posisi baca gagal di dokumen sangat panjang (ambang 1% terlalu kasar)",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "Resume bekerja walau posisi <1% (PDF ratusan/ribuan halaman). Ganti ambang restore dari fraksi (saved>0.01) ke berbasis piksel (target>24px). Re-apply restore sekali setelah layout settle (konten panjang) kecuali user sudah scroll. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "ReaderControls: targetY pixel-based + userMovedRef guard + retry 300ms. Tetap butuh Save history ON agar id file stabil lintas sesi."
+    },
+    {
       "id": "F08",
       "name": "Setting 'Paragraph spacing' (Tight/Normal/Loose) untuk PDF",
       "type": "feature",

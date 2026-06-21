@@ -4,6 +4,33 @@ Catatan tiap sesi agent. **Sesi terbaru di paling atas.**
 
 ---
 
+### Sesi 2026-06-21 (g) — B07: resume gagal di dokumen panjang
+
+**Fitur dikerjakan:** B07 (fix).
+
+**Akar masalah:** `ReaderControls` melewati restore bila `saved <= 0.01` (1%).
+Di PDF ratusan/ribuan halaman, posisi awal < 1% → restore di-skip → balik ke
+atas. Persisten-nya sendiri OK (localStorage `filereader:pos:<id>`).
+
+**Yang dilakukan:**
+- Ambang restore dari fraksi → **piksel** (`target < 24px` = anggap puncak).
+- **Retry 300ms** setelah layout settle (konten panjang) kecuali user sudah
+  scroll (`userMovedRef`).
+- Klarifikasi syarat: resume lintas sesi butuh **Save history ON** (id file stabil)
+  dan kode terbaru (versi Vercel lama belum punya fitur ini).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (29)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B07 `done`.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
 ### Sesi 2026-06-21 (f) — B06: deteksi paragraf PDF via indent
 
 **Fitur dikerjakan:** B06 (fix).
