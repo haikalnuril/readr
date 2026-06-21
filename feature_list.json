@@ -116,6 +116,46 @@
       "status": "done",
       "definition_of_done": "Di reader ada search bar: ketik kata → semua kemunculan ditandai, ada hitungan (mis. 3/12), dan tombol naik/turun untuk lompat antar hasil (scroll + sorot hasil aktif). Enter = next, Shift+Enter = prev, Esc = tutup. Verifikasi: build+test+lint+typecheck lulus.",
       "notes": "Pakai CSS Custom Highlight API (tidak mengubah DOM markdown). Komponen ReaderSearch + tombol search di TopBar (slot actions). Helper findRanges via TreeWalker."
+    },
+    {
+      "id": "B03",
+      "name": "Konten lebar (tabel markdown) overflow horizontal di mobile",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "Tabel markdown yang lebih lebar dari layar bisa di-scroll horizontal di dalam kontainernya sendiri (tidak mendorong/menggeser seluruh halaman). Kata/kode panjang ikut wrap. Tidak membuat elemen jadi scroll-container yang merusak window-scroll (auto-hide bar & posisi baca tetap jalan). Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "react-markdown components.table dibungkus div .table-scroll (overflow-x:auto). globals.css: overflow-wrap + table min-width:100%. Hindari overflow-x:hidden di main."
+    },
+    {
+      "id": "B04",
+      "name": "Struktur paragraf PDF hilang (teks jadi satu blok)",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "Ekstraksi teks PDF mempertahankan paragraf: baris yang ter-wrap digabung jadi satu paragraf, antar-paragraf dipisah baris kosong (deteksi via posisi-y/gap antar baris). Test: pdfTextFromItems pada item mock menghasilkan paragraf yang benar. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "Rewrite lib/parsers/pdf.ts: group item per baris (transform[5]), gabung wrapped line dgn spasi, paragraf break saat gap > ~1.5x median leading. Export pdfTextFromItems untuk diuji."
+    },
+    {
+      "id": "B05",
+      "name": "PDF masih under-segment: banyak paragraf jadi 1 (median gap terlalu tinggi)",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "Paragraf pendek (1-2 baris, novel/dialog) terpisah benar. Ganti baseline dari MEDIAN gap → estimasi leading dari gap kecil (persentil ke-25, di-clamp ke tinggi font) supaya halaman yang isinya paragraf pendek tidak ikut menaikkan ambang. Test: kasus mayoritas paragraf 1-baris tetap terpisah. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "Refinement B04. leading = clamp(p25, h*0.85, h*1.4); paragraphGap = leading*1.4."
+    },
+    {
+      "id": "B06",
+      "name": "Deteksi paragraf PDF via INDENT (novel tanpa baris kosong antar-paragraf)",
+      "type": "fix",
+      "status": "done",
+      "definition_of_done": "PDF yang memisah paragraf hanya dengan indent baris pertama (tanpa gap vertikal ekstra) ter-segmentasi benar. Tambah deteksi: baris yang x-awalnya lebih kanan dari margin kiri body = awal paragraf baru (OR dengan deteksi gap). Test: kasus indent-based terpisah benar; kasus lama tetap lulus. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "pdf.ts: simpan x kiri tiap baris, bodyLeft = min(x), paragraf baru jika (x - bodyLeft) > ~0.5em ATAU gap besar."
+    },
+    {
+      "id": "F08",
+      "name": "Setting 'Paragraph spacing' (Tight/Normal/Loose) untuk PDF",
+      "type": "feature",
+      "status": "done",
+      "definition_of_done": "Di Settings ada preset Tight/Normal/Loose (bukan angka percentile mentah) yang mengatur seberapa agresif paragraf PDF dipisah. Tersimpan di localStorage, dipakai saat upload/parse PDF. Berlaku untuk PDF yang di-upload setelah diubah (perlu re-upload untuk file lama). Test: factor tight memecah lebih banyak daripada normal. Verifikasi: build+test+lint+typecheck lulus.",
+      "notes": "types.ParagraphSpacing; storage get/set; pdf.ts terima factor; parseFile terima opts; FileUploader baca setting; Settings section Reading."
     }
   ]
 }

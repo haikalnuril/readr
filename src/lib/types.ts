@@ -1,5 +1,8 @@
 export type FileType = "md" | "txt" | "pdf";
 
+/** How aggressively PDF paragraphs are split during text extraction. */
+export type ParagraphSpacing = "tight" | "normal" | "loose";
+
 export interface ParsedFile {
   /** Plain-text/markdown content extracted from the file. */
   content: string;

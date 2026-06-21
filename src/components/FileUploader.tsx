@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ACCEPT_ATTR, isSupported, parseFile } from "@/lib/parsers";
-import { addToHistory } from "@/lib/storage";
+import { addToHistory, getParagraphSpacing } from "@/lib/storage";
 import { CloudUploadIcon } from "./icons";
 
 const FORMAT_PILLS = [
@@ -32,7 +32,7 @@ export function FileUploader() {
 
     setBusy(true);
     try {
-      const parsed = await parseFile(file);
+      const parsed = await parseFile(file, { paragraphSpacing: getParagraphSpacing() });
       const entry = addToHistory({
         name: file.name,
         type: parsed.type,

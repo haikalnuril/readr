@@ -1,6 +1,6 @@
 "use client";
 
-import Markdown from "react-markdown";
+import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { HistoryEntry } from "@/lib/types";
 
@@ -8,6 +8,16 @@ interface Props {
   entry: HistoryEntry;
   fontSize: number;
 }
+
+// Wrap wide tables so they scroll horizontally inside their own box instead of
+// pushing the whole page off-screen on mobile.
+const components: Components = {
+  table: ({ node, ...props }) => (
+    <div className="table-scroll">
+      <table {...props} />
+    </div>
+  ),
+};
 
 export function FileReaderView({ entry, fontSize }: Props) {
   if (entry.content.trim().length === 0) {
@@ -22,7 +32,9 @@ export function FileReaderView({ entry, fontSize }: Props) {
   if (entry.type === "md") {
     return (
       <article className="markdown-body" style={{ fontSize }}>
-        <Markdown remarkPlugins={[remarkGfm]}>{entry.content}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm]} components={components}>
+          {entry.content}
+        </Markdown>
       </article>
     );
   }

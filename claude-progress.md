@@ -4,6 +4,151 @@ Catatan tiap sesi agent. **Sesi terbaru di paling atas.**
 
 ---
 
+### Sesi 2026-06-21 (f) — B06: deteksi paragraf PDF via indent
+
+**Fitur dikerjakan:** B06 (fix).
+
+**Akar masalah (dari PDF asli user):** novel ini **tidak punya gap vertikal**
+antar-paragraf — paragraf hanya dibedakan **indent baris pertama**. Jadi deteksi
+berbasis gap (B04/B05) + preset Tight tidak bisa lihat batas paragraf.
+
+**Yang dilakukan:**
+- `pdf.ts`: simpan **x kiri** tiap baris. `bodyLeft = min(x)`. Paragraf baru bila
+  `(x - bodyLeft) > ~0.5em` (indent) **ATAU** gap besar (cara lama). Wrapped line
+  (di margin kiri, gap kecil) tetap digabung.
+- Test indent-based di `tests/pdf.test.ts` (8 test pdf, total 29).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (29)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B06 `done`. Sekarang dua gaya paragraf tertangani:
+indent-based (novel) dan blank-line-based.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
+### Sesi 2026-06-21 (e) — F08: setting Paragraph spacing (Tight/Normal/Loose)
+
+**Fitur dikerjakan:** F08 (feature). User pilih opsi "preset sederhana, berlaku
+saat re-upload" (bukan slider percentile mentah, bukan live re-tuning).
+
+**Yang dilakukan:**
+- `types.ParagraphSpacing` = "tight" | "normal" | "loose".
+- `storage`: get/setParagraphSpacing (default "normal").
+- `pdf.ts`: `pdfTextFromItems(items, factor)` & `parsePdf(data, factor)`.
+- `parsers/index.ts`: `parseFile(file, opts)` + map preset→factor
+  (tight 1.25 / normal 1.4 / loose 1.7).
+- `FileUploader`: baca `getParagraphSpacing()` saat upload.
+- `Settings`: section **Reading** → preset pills Tight/Normal/Loose + catatan
+  "berlaku untuk PDF yang di-upload setelah diubah (re-upload untuk file lama)".
+- Test factor (tight memecah lebih banyak) di `tests/pdf.test.ts`.
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (28)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. F08 `done`.
+
+**Catatan:** by design preset hanya kena saat parse/upload (konten tersimpan
+sebagai teks). Live re-tuning butuh simpan data baris per-PDF — ditolak user.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
+### Sesi 2026-06-21 (d) — B05: PDF paragraf under-segment (refinement B04)
+
+**Fitur dikerjakan:** B05 (fix, lanjutan B04).
+
+**Masalah:** B04 masih menggabung banyak paragraf jadi satu per halaman. Akar:
+baseline pakai MEDIAN gap; di prosa dengan paragraf pendek, mayoritas gap adalah
+gap antar-paragraf → median tinggi → ambang tak pernah kena.
+
+**Yang dilakukan:**
+- `pdf.ts`: baseline leading dari gap kecil — persentil ke-25 gap, di-**clamp**
+  ke `[h*0.85, h*1.4]` (h = tinggi font median) supaya halaman berisi paragraf
+  1-baris tidak menaikkan ambang. `paragraphGap = leading * 1.4`.
+- Tambah test kasus "mayoritas paragraf 1-baris" di `tests/pdf.test.ts`.
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (27)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B05 `done`.
+
+**Catatan:** heuristik berbasis gap; PDF yang paragrafnya hanya dibedakan indent
+(tanpa spasi vertikal) tetap sulit dipisah — di luar lingkup sekarang.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
+### Sesi 2026-06-21 (c) — B04: paragraf PDF + diskusi gambar PDF
+
+**Fitur dikerjakan:** B04 (fix).
+
+**Masalah:** ekstraksi PDF menggabung semua teks per halaman dengan spasi →
+paragraf/baris hilang, jadi satu blok (membingungkan untuk novel/dialog).
+
+**Yang dilakukan:**
+- Rewrite `lib/parsers/pdf.ts`: group text item per baris pakai posisi-y
+  (`transform[5]`), gabung wrapped line dalam paragraf dengan spasi, dan sisip
+  baris kosong saat gap antar-baris > ~1.5x median leading (deteksi paragraf).
+- Export `pdfTextFromItems(items)` (fungsi murni) + `tests/pdf.test.ts` (5 test).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (26)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B04 `done`.
+
+**Keputusan gambar PDF:** user pilih **TEXT-ONLY** (tidak menampilkan
+gambar/cover PDF). Alasan: pertahankan fitur teks (search, font size, dark mode,
+reflow). Jadi tidak ada kerja render-gambar. Jangan tawarkan lagi kecuali user
+berubah pikiran.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
+### Sesi 2026-06-21 (b) — B03: fix tabel overflow di mobile
+
+**Fitur dikerjakan:** B03 (fix). App sudah live di Vercel (readr-*.vercel.app).
+
+**Masalah:** tabel markdown lebih lebar dari layar → mendorong seluruh halaman
+geser ke samping di HP.
+
+**Yang dilakukan:**
+- `FileReaderView`: override `components.table` react-markdown → bungkus tiap
+  `<table>` dengan `<div class="table-scroll">`.
+- `globals.css`: `.table-scroll { overflow-x: auto }` (tabel scroll di dalam
+  kotaknya sendiri), `table { min-width:100%; width:max-content }`,
+  `.markdown-body { overflow-wrap/word-break }`, inline `code` wrap.
+- **Sengaja tidak** pakai `overflow-x:hidden` di main supaya tidak jadi
+  scroll-container (window-scroll: auto-hide bar + posisi baca tetap jalan).
+
+**Hasil verifikasi:**
+- [x] npm run test  → PASS (21)
+- [x] npm run lint  → PASS
+- [x] npm run typecheck → PASS
+- [x] npm run build → PASS
+
+**Status akhir:** selesai. B03 `done`.
+
+**Commit:** (belum commit — menunggu instruksi user)
+
+---
+
 ### Sesi 2026-06-21 — F07: cari teks di dokumen + next/prev
 
 **Fitur dikerjakan:** F07 (feature). Juga: entry C04 (rename 'readr') yang sempat

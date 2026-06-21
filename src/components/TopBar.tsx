@@ -52,7 +52,7 @@ export function TopBar({ title, backHref = "/", actions }: Props) {
           onClick={() => setDrawerOpen(true)}
           className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm text-fg hover:border-accent"
         >
-          <ClockIcon width={16} height={16} />
+          <ClockIcon width={16} height={21} />
           <span className="hidden sm:inline">History</span>
         </button>
 

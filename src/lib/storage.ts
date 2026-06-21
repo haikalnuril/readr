@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "./types";
+import type { HistoryEntry, ParagraphSpacing } from "./types";
 
 /**
  * Storage adapter for the readr app.
@@ -14,6 +14,7 @@ const ACTIVE_KEY = "filereader:active";
 const FONT_KEY = "filereader:fontSize";
 const SAVE_KEY = "filereader:saveHistory";
 const POS_PREFIX = "filereader:pos:";
+const PARA_KEY = "filereader:paragraphSpacing";
 
 const MAX_HISTORY = 50;
 const MAX_ACTIVE = 20;
@@ -81,6 +82,18 @@ export function setSaveHistory(enabled: boolean): void {
   s.setItem(SAVE_KEY, enabled ? "true" : "false");
   // Turning it off forgets the persisted list (privacy intent of "local only").
   if (!enabled) s.removeItem(HISTORY_KEY);
+}
+
+// ── Paragraph spacing preference (F08) ──────────────────────────────────────
+
+export function getParagraphSpacing(): ParagraphSpacing {
+  const s = local();
+  const v = s?.getItem(PARA_KEY);
+  return v === "tight" || v === "loose" ? v : "normal";
+}
+
+export function setParagraphSpacing(value: ParagraphSpacing): void {
+  local()?.setItem(PARA_KEY, value);
 }
 
 // ── History ────────────────────────────────────────────────────────────────

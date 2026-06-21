@@ -6,13 +6,22 @@ import {
   FONT_MAX,
   FONT_MIN,
   getFontSize,
+  getParagraphSpacing,
   getSaveHistory,
   setFontSize,
+  setParagraphSpacing,
   setSaveHistory,
 } from "@/lib/storage";
+import type { ParagraphSpacing } from "@/lib/types";
 import { ThemePills } from "@/components/ThemePills";
 import { Toggle } from "@/components/Toggle";
 import { ArrowLeftIcon } from "@/components/icons";
+
+const SPACING_OPTIONS: { id: ParagraphSpacing; label: string }[] = [
+  { id: "tight", label: "Tight" },
+  { id: "normal", label: "Normal" },
+  { id: "loose", label: "Loose" },
+];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -25,10 +34,12 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export default function SettingsPage() {
   const [font, setFont] = useState(16);
   const [saveHistory, setSave] = useState(true);
+  const [spacing, setSpacing] = useState<ParagraphSpacing>("normal");
 
   useEffect(() => {
     setFont(getFontSize());
     setSave(getSaveHistory());
+    setSpacing(getParagraphSpacing());
   }, []);
 
   function handleFont(value: number) {
@@ -38,6 +49,11 @@ export default function SettingsPage() {
   function handleSave(value: boolean) {
     setSave(value);
     setSaveHistory(value);
+  }
+
+  function handleSpacing(value: ParagraphSpacing) {
+    setSpacing(value);
+    setParagraphSpacing(value);
   }
 
   return (
@@ -83,6 +99,40 @@ export default function SettingsPage() {
           </span>
         </div>
         <p className="mt-2 text-right text-xs tabular-nums text-muted">{font}px</p>
+      </div>
+
+      {/* Reading */}
+      <SectionLabel>Reading</SectionLabel>
+
+      <div className="rounded-xl border border-border bg-surface p-4">
+        <p className="font-medium text-fg">Paragraph spacing</p>
+        <p className="mb-3 text-sm text-muted">
+          How aggressively PDF paragraphs are split
+        </p>
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Paragraph spacing">
+          {SPACING_OPTIONS.map((opt) => {
+            const selected = spacing === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => handleSpacing(opt.id)}
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                  selected
+                    ? "border-accent bg-accent text-white"
+                    : "border-border bg-surface text-fg hover:border-accent"
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-xs text-muted">
+          Applies to PDFs you upload after changing this — re-upload a file to re-apply.
+        </p>
       </div>
 
       {/* History */}

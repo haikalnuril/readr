@@ -1,4 +1,16 @@
-import type { FileType, ParsedFile } from "../types";
+import type { FileType, ParagraphSpacing, ParsedFile } from "../types";
+
+/** Threshold multipliers for PDF paragraph detection (see pdf.ts). */
+const PARAGRAPH_FACTORS: Record<ParagraphSpacing, number> = {
+  tight: 1.25,
+  normal: 1.4,
+  loose: 1.7,
+};
+
+export interface ParseOptions {
+  /** Affects PDF paragraph splitting; ignored for md/txt. */
+  paragraphSpacing?: ParagraphSpacing;
+}
 
 /** Reads a Blob as UTF-8 text. Uses FileReader so it works in browsers and jsdom. */
 function readAsText(file: Blob): Promise<string> {
@@ -41,7 +53,7 @@ export function isSupported(name: string, mime = ""): boolean {
  * Reads and parses an uploaded File into plain text / markdown.
  * Throws if the file type is unsupported.
  */
-export async function parseFile(file: File): Promise<ParsedFile> {
+export async function parseFile(file: File, opts: ParseOptions = {}): Promise<ParsedFile> {
   const type = detectType(file.name, file.type);
   if (!type) {
     throw new Error(`Format file tidak didukung: ${file.name}`);
@@ -50,7 +62,8 @@ export async function parseFile(file: File): Promise<ParsedFile> {
   if (type === "pdf") {
     const { parsePdf } = await import("./pdf");
     const buffer = await file.arrayBuffer();
-    return { type, content: await parsePdf(buffer) };
+    const factor = PARAGRAPH_FACTORS[opts.paragraphSpacing ?? "normal"];
+    return { type, content: await parsePdf(buffer, factor) };
   }
 
   // md & txt are read as UTF-8 text.
